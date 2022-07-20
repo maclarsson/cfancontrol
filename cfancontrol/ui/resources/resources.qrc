@@ -1,0 +1,24 @@
+<RCC>
+  <qresource prefix="fans">
+    <file>fan_connected_dark.png</file>
+    <file>fan_disconnected_light.png</file>
+    <file>fan_connected_grey.png</file>
+    <file>fan_disconnected_grey.png</file>
+    <file>fan_connected_white.png</file>
+    <file>fan_disconnected_white.png</file>
+    <file>fan_disconnected.png</file>
+    <file>fan_connected.png</file>
+  </qresource>
+  <qresource prefix="curves">
+    <file>curve_exponential.png</file>
+    <file>curve_logistic.png</file>
+    <file>curve_semi_exp.png</file>
+    <file>curve_semi_log.png</file>
+    <file>curve_linear.png</file>
+  </qresource>
+  <qresource prefix="icons">
+    <file>commander_icon.png</file>
+    <file>fan_grey_32.png</file>
+    <file>fan_white_24.png</file>
+  </qresource>
+</RCC>

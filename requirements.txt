@@ -1,0 +1,9 @@
+setuptools~=45.2.0
+pyqtgraph~=0.12.4
+liquidctl~=1.6.1
+numpy~=1.17.4
+PyYAML~=5.3.1
+PySensors~=0.0.4
+pid~=3.0.4
+PyQt5~=5.14.1
+pyxdg~=0.28
