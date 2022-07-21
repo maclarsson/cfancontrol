@@ -6,7 +6,7 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 
 from .gui import MainWindow
 from .fanmanager import FanManager
-from .log import LogManager
+from .settings import Environment
 
 
 def main(manager: FanManager, show_app=True, theme='system'):
@@ -26,6 +26,14 @@ def main(manager: FanManager, show_app=True, theme='system'):
     if show_app:
         mainwin.show()
     app.exec()
+
+
+def warning_already_running():
+    app = QtWidgets.QApplication(sys.argv)
+    response = QtWidgets.QMessageBox.warning(None, Environment.APP_FANCY_NAME,
+                                             f"Cannot start {Environment.APP_NAME} as an instance is already running.\n\n"
+                                             f"Check '{Environment.pid_path}/{Environment.APP_NAME}.pid' and remove it if necessary.",
+                                             QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
 
 def load_color_scheme(scheme: str) -> QtGui.QPalette:

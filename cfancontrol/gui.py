@@ -18,7 +18,6 @@ from .graphs import FanCurveWidget
 
 
 class MainWindow(QtWidgets.QMainWindow):
-
     manager: FanManager
 
     def __init__(self, fan_manager: FanManager, palette: QtGui.QPalette):
@@ -152,7 +151,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._tray_menu = QtWidgets.QMenu(self)
         self._option_show = QtWidgets.QAction("Show")
         self._option_show.triggered.connect(self.show)
-        self._option_manager = QtWidgets.QAction("Enable Fan Manager")
+        self._option_manager = QtWidgets.QAction("Run Update Daemon")
         self._option_manager.setCheckable(True)
         self._option_manager.triggered.connect(lambda: self._toggle_manager(self._option_manager.isChecked()))
         self._option_exit = QtWidgets.QAction("Exit")
@@ -271,16 +270,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.action_Error.triggered.connect(lambda: self._set_log_level(logging.ERROR))
 
         self.ui.switch_daemon.setChecked(Config.auto_start)
-        self.ui.switch_daemon.toggled.connect(lambda: self._toggle_manager(self.ui.switch_daemon.isChecked()))
+        self.ui.switch_daemon.clicked.connect(lambda: self._toggle_manager(self.ui.switch_daemon.isChecked()))
 
         self.ui.comboBox_profiles.currentIndexChanged.connect(lambda: self._apply_profile(self.ui.comboBox_profiles.currentText(), self.ui.switch_daemon.isChecked()))
         self._set_profiles_combobox(ProfileManager.get_profile_from_file_name(Config.profile_file))
 
     def _toggle_manager(self, mode: bool):
-        self.ui.slider_interval.setEnabled(mode)
-        self.ui.label_Interval.setEnabled(mode)
-        self._option_manager.setChecked(mode)
-        self.manager.toggle_manager(mode)
+        if mode and self.ui.comboBox_profiles.currentIndex() == 0:
+            response = QtWidgets.QMessageBox.warning(self, Environment.APP_FANCY_NAME,
+                                                     f"Please select a profile before starting the update daemon.",
+                                                     QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+            self.ui.slider_interval.setEnabled(False)
+            self.ui.label_Interval.setEnabled(False)
+            self.ui.switch_daemon.setChecked(False)
+            self._option_manager.setChecked(False)
+        else:
+            self.ui.slider_interval.setEnabled(mode)
+            self.ui.label_Interval.setEnabled(mode)
+            self._option_manager.setChecked(mode)
+            self.manager.toggle_manager(mode)
 
     def manager_callback(self, aborted: bool):
         LogManager.logger.debug("Fan manager thread callback")
@@ -536,8 +544,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _set_theme(self, theme: str):
         response = QtWidgets.QMessageBox.information(self, Environment.APP_FANCY_NAME,
-                                                  f"The change in color theme will be applied after a restart of the program.",
-                                                  QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+                                                     f"The change in color theme will be applied after a restart of the program.",
+                                                     QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
         Config.theme = theme
 
     def _update_ui_loop(self):

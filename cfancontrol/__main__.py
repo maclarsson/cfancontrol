@@ -40,7 +40,6 @@ def parse_settings() -> argparse.Namespace:
 
 
 def main():
-
     Environment.prepare_environment()
 
     LogManager.init_logging(Environment.log_full_name, Config.log_level)
@@ -64,10 +63,12 @@ def main():
                     else:
                         LogManager.logger.critical(f"No profile file specified for daemon mode -> please us -p option to specify a profile")
     except PidFileAlreadyLockedError:
+        if args.mode == "gui":
+            app.warning_already_running()
         LogManager.logger.critical(f"PID file '{Environment.pid_path}/{Environment.APP_NAME}.pid' already exists - cfancontrol is already running or was not completed properly -> STOPPING")
     except RuntimeError as err:
         LogManager.logger.exception(f"Program stopped with runtime error")
-    except Exception:
+    except BaseException:
         LogManager.logger.exception(f"Program stopped with unknown error")
     else:
         LogManager.logger.info(f"Program stopped normally")

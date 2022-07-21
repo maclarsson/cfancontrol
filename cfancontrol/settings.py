@@ -47,8 +47,8 @@ class Config(object):
     interval: float = 10.0
     auto_start: bool = False
     profile_file: str = ''
-    log_level: int = logging.DEBUG
-    theme: str = ''
+    log_level: int = logging.INFO
+    theme: str = 'light'
 
     @classmethod
     def from_arguments(cls, **kwargs):
