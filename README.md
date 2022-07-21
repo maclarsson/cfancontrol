@@ -85,7 +85,13 @@ Device #2: Gigabyte RGB Fusion 2.0 5702 Controller
 
 ## Usage
 
-Run the `cfancontrol -h` command for a usage summary:
+Use this command to start the program (it will be run as GUI and uses a configuration file for its settings):
+
+```bash
+$ cfancontrol gui -s
+```
+
+For more options and details run the `cfancontrol -h` command for a usage summary:
 
 ```bash
 usage: cfancontrol [-h] [-a] [-i INTERVAL] [-p PROFILE_FILE] [-l {0,10,20,30,40}] [-t {light,dark,system}] [-s] {daemon,gui}
@@ -113,7 +119,7 @@ optional arguments:
 
 Runs the program as a daemon without the GUI. This can be useful when using cfancontrol in a system service or run system wide at startup for unsupervised systems. **Note:** This mode implies the `-a` option and requires `-p PROFILE_FILE` option or an equivalent in the settings file with `-s` option.
 
-##### GUI
+##### GUI (recommended)
 
 Loads cfancontrol with the main GUI to set up and manage fan speeds and profiles. The GUI starts minimized and has its own tray icon.
 
