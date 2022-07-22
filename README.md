@@ -57,9 +57,13 @@ $ sudo pip install .
 
 ## Configuration
 
-### Sensors
+### hwmon Sensors
 
-Temperature sensors exposed through the Linux hardware monitoring kernel API (hwmon:sysfs-interface) are automatically detected via lm-sensors package. The sensors can be labeled (and unused ones ignored) by editing `/etc/sensors3.conf` file as described [here](https://linux.die.net/man/5/sensors3.conf).
+Temperature sensors exposed through the Linux hardware monitoring kernel API (hwmon:sysfs-interface) are automatically detected via lm-sensors package:
+
+##### Labeling Sensors
+
+The sensors can be labeled (and unused ones ignored) by editing the file `~/.config/cfancontrol/sensors3.conf` (for a regular user) -or-  `/etc/sensors3.conf` (for root user). A guide to the format of these files can be found [here](https://linux.die.net/man/5/sensors3.conf).
 
 **Example**: to change the temperature sensor for an AMD CPU to show up as 'CPU' amend the config file as follows:
 

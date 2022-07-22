@@ -16,6 +16,7 @@ class Environment(object):
     APP_VERSION: str = VERSION
     LOG_FILE: str = 'cfancontrol.log'
     CONFIG_FILENAME: str = 'config.yaml'
+    SENSORS_FILE: str = 'sensors3.conf'
 
     is_root: bool = False
     log_path: str = ''
@@ -23,6 +24,7 @@ class Environment(object):
     settings_path: str = ''
     config_full_name: str = ''
     pid_path: str = ''
+    sensors_config_file: str = ''
 
     @staticmethod
     def prepare_environment():
@@ -30,15 +32,19 @@ class Environment(object):
             Environment.is_root = True
             Environment.log_path = "/var/log"
             Environment.settings_path = os.path.join("/etc", Environment.APP_NAME)
+            Environment.sensors_config_file = os.path.join("/etc", Environment.SENSORS_FILE)
             Environment.pid_path = "/var/run"
         else:
             Environment.log_path = os.path.join(xdg_state_home, Environment.APP_NAME)
             Environment.settings_path = os.path.join(xdg_config_home, Environment.APP_NAME)
+            Environment.sensors_config_file = os.path.join(Environment.settings_path, Environment.SENSORS_FILE)
             Environment.pid_path = f"/var/run/user/{os.geteuid()}"
         if not os.path.isdir(Environment.log_path):
             os.makedirs(Environment.log_path, mode=0o755, exist_ok=True)
         if not os.path.isdir(Environment.settings_path):
             os.makedirs(Environment.settings_path, mode=0o755, exist_ok=True)
+        if not os.path.isfile(Environment.sensors_config_file):
+            os.mknod(Environment.sensors_config_file, mode=0o755)
         Environment.log_full_name = os.path.join(Environment.log_path, Environment.LOG_FILE)
         Environment.config_full_name = os.path.join(Environment.settings_path, Environment.CONFIG_FILENAME)
 

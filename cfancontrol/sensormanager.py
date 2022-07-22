@@ -3,6 +3,7 @@ from typing import Optional, List
 import liquidctl    # liquidctl module
 import sensors      # PySensors module
 
+from .settings import Environment
 from .sensor import Sensor, DummySensor
 from .hwsensor import HwSensor
 from .devicesensor import KrakenX3Sensor, HydroPlatinumSensor
@@ -16,7 +17,8 @@ class SensorManager(object):
     @staticmethod
     def identify_system_sensors():
         # get sensors via PySensors and libsensors.so (part of lm_sensors) -> config in /etc/sensors3.conf
-        sensors.init()
+        # sensors.init()
+        sensors.init(bytes(Environment.sensors_config_file, "utf-8"))
         try:
             for chip in sensors.iter_detected_chips():
                 LogManager.logger.info(f"System sensor {repr(chip)} found")

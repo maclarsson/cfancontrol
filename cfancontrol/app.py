@@ -2,7 +2,7 @@ import os.path
 import sys
 from typing import List
 
-from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore, Qt
 
 from .gui import MainWindow
 from .fanmanager import FanManager
@@ -10,6 +10,12 @@ from .settings import Environment
 
 
 def main(manager: FanManager, show_app=True, theme='light'):
+
+    # Set attributes for font scaling
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    os.environ['QT_FONT_DPI'] = '96'  # this appears to need to be set to keep things sane
+    os.environ['QT_SCALE_FACTOR'] = str(1.0)
+
     # Initialize application
     app = QtWidgets.QApplication(sys.argv)
     if theme != 'system':

@@ -24,6 +24,7 @@
   </property>
   <property name="font">
    <font>
+    <family>Ubuntu</family>
     <pointsize>10</pointsize>
    </font>
   </property>
@@ -76,6 +77,7 @@
        <widget class="QLabel" name="header_PWM">
         <property name="font">
          <font>
+          <family>Ubuntu</family>
           <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -124,6 +126,12 @@
           <width>100</width>
           <height>36</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Ubuntu</family>
+          <pointsize>10</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>Fan 1</string>
@@ -246,6 +254,7 @@
        <widget class="QLabel" name="header_channel">
         <property name="font">
          <font>
+          <family>Ubuntu</family>
           <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -398,6 +407,7 @@
        <widget class="QLabel" name="header_speed">
         <property name="font">
          <font>
+          <family>Ubuntu</family>
           <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -491,6 +501,7 @@
        <widget class="QLabel" name="header_mode">
         <property name="font">
          <font>
+          <family>Ubuntu</family>
           <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -518,6 +529,7 @@
        <widget class="QLabel" name="header_temp">
         <property name="font">
          <font>
+          <family>Ubuntu</family>
           <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -1049,6 +1061,7 @@
       </property>
       <property name="font">
        <font>
+        <family>Ubuntu</family>
         <pointsize>9</pointsize>
        </font>
       </property>
@@ -1070,6 +1083,7 @@
       </property>
       <property name="font">
        <font>
+        <family>Ubuntu</family>
         <pointsize>9</pointsize>
        </font>
       </property>
