@@ -1,4 +1,5 @@
 import threading
+import time
 from typing import Dict, Optional, List, ContextManager
 
 import liquidctl.driver.commander_pro
@@ -8,6 +9,9 @@ from .log import LogManager
 
 
 class FanController(ContextManager):
+
+    RPM_STEP: int = 10
+    RPM_INTERVAL: float = 0.1
 
     @classmethod
     def get_commander(cls) -> Optional[liquidctl.driver.commander_pro.CommanderPro]:
@@ -80,25 +84,41 @@ class FanController(ContextManager):
                 LogManager.logger.exception(f"Problem in getting speed for channel '{channel}'")
         return 0
 
-    def set_channel_speed(self, channel: str, new_pwm: int, pwm_percent: int, temperature: float) -> bool:
+    def set_channel_speed(self, channel: str, new_pwm: int, current_percent: int, new_percent:int, temperature: float) -> bool:
         if self.is_valid:
-            LogManager.logger.info(f"Setting fan speed of channel '{channel}' to PWM {new_pwm} / {str(pwm_percent)}% for temperature {temperature}°C")
-            try:
-                self._safe_call_controller_function(lambda: self.commander.set_fixed_speed(channel=channel, duty=pwm_percent))
+            LogManager.logger.info(f"Setting fan speed of channel '{channel}' to PWM {new_pwm} / {str(new_percent)}% for temperature {temperature}°C")
+            if self._set_channel_speed_smoothly(channel, current_percent, new_percent):
+                LogManager.logger.debug("Channel speed changed")
                 return True
-            except Exception as err:
-                LogManager.logger.exception(f"Problem in setting speed for channel {channel}")
         return False
 
-    def stop_channel(self, channel: str):
+    def stop_channel(self, channel: str, current_percent: int) -> bool:
         if self.is_valid:
             LogManager.logger.info(f"Stopping channel '{channel}'")
-            try:
-                self._safe_call_controller_function(lambda: self.commander.set_fixed_speed(channel=channel, duty=0))
+            if self._set_channel_speed_smoothly(channel, current_percent, 0):
                 LogManager.logger.debug("Channel stopped")
                 return True
-            except Exception as err:
-                LogManager.logger.exception(f"Problem in stopping channel '{channel}'")
+        return False
+
+    def _set_channel_speed_smoothly(self, channel: str, current_percent: int, new_percent: int) -> bool:
+        try:
+            LogManager.logger.debug(f"Current fan speed {current_percent} / new fan sped {new_percent}")
+            if new_percent >= current_percent:
+                factor = 1
+            else:
+                factor = -1
+            steps = int((new_percent - current_percent) / self.RPM_STEP * factor)
+            for i in range(1, steps):
+                duty = int(current_percent + i * factor * self.RPM_STEP)
+                LogManager.logger.debug(f"Setting fan speed of channel '{channel}' to {str(duty)}%")
+                self._safe_call_controller_function(lambda: self.commander.set_fixed_speed(channel=channel, duty=duty))
+                time.sleep(self.RPM_INTERVAL)
+            LogManager.logger.debug(f"Setting fan speed of channel '{channel}' to {str(new_percent)}%")
+            self._safe_call_controller_function(lambda: self.commander.set_fixed_speed(channel=channel, duty=new_percent))
+            return True
+        except BaseException:
+            LogManager.logger.exception(f"Problem in setting speed for channel {channel}")
+        return False
 
     def _safe_call_controller_function(self, function):
         self._lock.acquire()

@@ -92,7 +92,7 @@ class FanManager:
                 break
 
         for channel, fan in self._channels.items():
-            self._controller.stop_channel(channel)
+            self._controller.stop_channel(channel, fan.get_current_pwm_as_percentage())
             fan.pwm = 0
 
         self._signals.reset()
@@ -133,9 +133,9 @@ class FanManager:
         if self.is_manager_running():
             for channel, fan in self._channels.items():
                 if fan:
-                    update, new_pwm, pwm_percent, temperature = fan.update_pwm()
+                    update, new_pwm, new_percent, temperature = fan.update_pwm()
                     if update:
-                        if self._controller.set_channel_speed(channel, new_pwm, pwm_percent, temperature):
+                        if self._controller.set_channel_speed(channel, new_pwm, fan.get_current_pwm_as_percentage(), new_percent, temperature):
                             fan.set_current_pwm(new_pwm)
                 else:
                     LogManager.logger.warning(f"No fan for channel {channel} available")

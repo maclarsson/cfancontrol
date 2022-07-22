@@ -20,7 +20,7 @@ class PWMFan:
         self.pwm = pwm
         return
 
-    def get_current_pwm_as_percentage(self) -> float:
+    def get_current_pwm_as_percentage(self) -> int:
         return FanCurve.pwm_to_percentage(self.pwm)
 
     def get_current_temp(self) -> float:

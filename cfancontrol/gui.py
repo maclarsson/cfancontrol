@@ -556,7 +556,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self._update_ui()
 
     def _update_ui(self):
-        # if not self.isHidden() and self._is_initialized:
         if self.manager:
             LogManager.logger.debug("Updating UI")
             for i in range(1, 7):
