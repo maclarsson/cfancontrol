@@ -306,9 +306,14 @@ class MainWindow(QtWidgets.QMainWindow):
             LogManager.logger.info("Fan manager thread ended normally")
 
     def _fan_config_button(self, channel: str):
-        self.ui.spinBox_fixed.blockSignals(True)
         button: QtWidgets.QPushButton = self.sender()
-        font = QtGui.QFont()
+        if self.ui.comboBox_profiles.currentIndex() == 0:
+            response = QtWidgets.QMessageBox.warning(self, Environment.APP_FANCY_NAME,
+                                                     f"Please select a profile before setting up fan modes.",
+                                                     QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+            self._deselect_button(button, True)
+            return
+        self.ui.spinBox_fixed.blockSignals(True)
         if self._active_button is not button:
             self._active_channel = channel
             fan_curve = self.manager.get_channel_fancurve(channel)
@@ -352,27 +357,33 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.pushButton_semi_exp_curve.setEnabled(True)
                 self.ui.pushButton_semi_logistic_curve.setEnabled(True)
             if self._active_button is not None:
-                font.setBold(False)
-                font.setWeight(50)
-                self._active_button.setFont(font)
-                self._set_button_color(self._active_button, self._palette.button().color(), self._palette.buttonText().color())
-            font.setBold(True)
-            font.setWeight(75)
-            button.setFont(font)
-            self._set_button_color(button, self._palette.highlight().color(), self._palette.highlightedText().color())
-            self._active_button = button
+                self._deselect_button(self._active_button, False)
+            self._select_button(button)
             self._active_curve = fan_curve
             self._show_fan_graph(fan_curve.get_fan_mode() == FanMode.Curve)
         else:
-            font = QtGui.QFont()
-            font.setBold(False)
-            font.setWeight(50)
-            button.setFont(font)
-            self._set_button_color(button, self._palette.button().color(), self._palette.buttonText().color())
-            button.setAutoExclusive(False)
-            button.setChecked(False)
-            self.ui.slider_interval.setFocus()
-            button.setAutoExclusive(True)
+            self._deselect_button(button, True)
+        self.ui.spinBox_fixed.blockSignals(False)
+
+    def _select_button(self, button: QtWidgets.QPushButton):
+        font = QtWidgets.QApplication.font()
+        font.setBold(True)
+        font.setWeight(75)
+        button.setFont(font)
+        self._set_button_color(button, self._palette.highlight().color(), self._palette.highlightedText().color())
+        self._active_button = button
+
+    def _deselect_button(self, button: QtWidgets.QPushButton, disable_fan_mode: bool):
+        font = QtWidgets.QApplication.font()
+        font.setBold(False)
+        font.setWeight(50)
+        button.setFont(font)
+        self._set_button_color(button, self._palette.button().color(), self._palette.buttonText().color())
+        button.setAutoExclusive(False)
+        button.setChecked(False)
+        self.ui.slider_interval.setFocus()
+        button.setAutoExclusive(True)
+        if disable_fan_mode:
             self.ui.radioButton_off.setAutoExclusive(False)
             self.ui.radioButton_fixed.setAutoExclusive(False)
             self.ui.radioButton_curve.setAutoExclusive(False)
@@ -389,7 +400,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self._active_curve = None
             self._active_channel = None
             self.ui.graphicsView_fancurve.reset_graph()
-        self.ui.spinBox_fixed.blockSignals(False)
 
     @staticmethod
     def _set_button_color(button: QtWidgets.QPushButton, background_color: QtGui.QColor, text_color: QtGui.QColor):
@@ -479,7 +489,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _apply_profile(self, profile_name: str, auto_start: bool):
         if self._active_button is not None:
-            self._active_button.click()
+            # self._active_button.click()
+            self._deselect_button(self._active_button, True)
         self._toggle_manager(mode=False)
         window_title = Environment.APP_FANCY_NAME
         success, applied_profile = self.manager.set_profile(profile_name)

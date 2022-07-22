@@ -9,7 +9,7 @@ from .fanmanager import FanManager
 from .settings import Environment
 
 
-def main(manager: FanManager, show_app=True, theme='system'):
+def main(manager: FanManager, show_app=True, theme='light'):
     # Initialize application
     app = QtWidgets.QApplication(sys.argv)
     if theme != 'system':

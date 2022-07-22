@@ -22,6 +22,11 @@
     <height>24</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Commander Pro Commander</string>
   </property>
@@ -53,7 +58,7 @@
        <x>20</x>
        <y>37</y>
        <width>381</width>
-       <height>270</height>
+       <height>271</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_control">
@@ -71,6 +76,7 @@
        <widget class="QLabel" name="header_PWM">
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -240,6 +246,7 @@
        <widget class="QLabel" name="header_channel">
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -391,6 +398,7 @@
        <widget class="QLabel" name="header_speed">
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -483,6 +491,7 @@
        <widget class="QLabel" name="header_mode">
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -509,6 +518,7 @@
        <widget class="QLabel" name="header_temp">
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -1049,12 +1059,12 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="label_segments">
       <property name="geometry">
        <rect>
-        <x>265</x>
+        <x>245</x>
         <y>12</y>
-        <width>51</width>
+        <width>71</width>
         <height>20</height>
        </rect>
       </property>
@@ -1064,7 +1074,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Points</string>
+       <string>Segments</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
