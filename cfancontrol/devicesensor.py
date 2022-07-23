@@ -52,7 +52,7 @@ class AIODeviceSensor(Sensor, ContextManager):
     def get_temperature(self) -> float:
         raise NotImplementedError()
 
-    def get_signature(self) -> float:
+    def get_signature(self) -> list:
         raise NotImplementedError()
 
 
@@ -83,10 +83,10 @@ class HydroPlatinumSensor(AIODeviceSensor):
     # Details: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/hydro_platinum.py
 
     def __init__(self, device: HydroPlatinum):
-        device_description: str = device.description
-        device_name = "Corsair Hydro "
-        device_model = device_description.split(device_name, 1)[1]
-        super(HydroPlatinumSensor, self).__init__(device, device_model)
+        self.device_description: str = device.description
+        self.device_name = "Corsair Hydro "
+        self.device_model = self.device_description.split(self.device_name, 1)[1]
+        super(HydroPlatinumSensor, self).__init__(device, self.device_model)
 
     def get_temperature(self) -> float:
         LogManager.logger.debug(f"Reading temperature from {self.sensor_name} sensor")

@@ -10,7 +10,7 @@ class Sensor(object):
     def get_temperature(self) -> float:
         raise NotImplementedError()
 
-    def get_signature(self) -> tuple:
+    def get_signature(self) -> list:
         raise NotImplementedError()
 
 

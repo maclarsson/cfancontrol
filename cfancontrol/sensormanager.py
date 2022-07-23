@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 import liquidctl    # liquidctl module
 import sensors      # PySensors module
@@ -7,6 +7,7 @@ from .settings import Environment
 from .sensor import Sensor, DummySensor
 from .hwsensor import HwSensor
 from .devicesensor import KrakenX3Sensor, HydroPlatinumSensor
+from .nvidiasensor import NvidiaSensor
 from .log import LogManager
 
 
@@ -17,7 +18,6 @@ class SensorManager(object):
     @staticmethod
     def identify_system_sensors():
         # get sensors via PySensors and libsensors.so (part of lm_sensors) -> config in /etc/sensors3.conf
-        # sensors.init()
         sensors.init(bytes(Environment.sensors_config_file, "utf-8"))
         try:
             for chip in sensors.iter_detected_chips():
@@ -44,6 +44,12 @@ class SensorManager(object):
             elif type(dev) == liquidctl.driver.hydro_platinum.HydroPlatinum:
                 LogManager.logger.info(f"'{dev.description}' found")
                 SensorManager.system_sensors.append(HydroPlatinumSensor(dev))
+
+        # append sensors of GPUs (if found)
+        nvidia_gpus: List[NvidiaSensor] = NvidiaSensor.detect_gpus()
+        for gpu in nvidia_gpus:
+            LogManager.logger.info(f"nVidia GPU #{gpu.index} with name '{gpu.device_name}' found")
+            SensorManager.system_sensors.append(gpu)
 
     @staticmethod
     def get_system_sensor(signature: list) -> Optional[Sensor]:
