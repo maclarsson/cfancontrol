@@ -6,7 +6,7 @@ from typing import Optional, List, Dict
 
 from .log import LogManager
 from .settings import Environment, Config
-from .fancontroller import FanController
+from .fancontroller import ControllerManager, FanController, CommanderPro
 from .fancurve import FanCurve, FanMode
 from .pwmfan import PWMFan
 from .sensor import Sensor, DummySensor
@@ -18,7 +18,7 @@ from .profilemanager import ProfileManager
 class FanManager:
 
     _is_running: bool
-    _controller: FanController
+    _controller: Optional[FanController]
     _interval: float
     manager_thread: threading.Thread
     _channels: Dict[str, PWMFan]
@@ -45,9 +45,18 @@ class FanManager:
         ProfileManager.enum_profiles(Environment.settings_path)
 
         # get active channels from controller
-        self._controller: FanController = FanController()
-        self._controller_channels = self._controller.detect_channels()
-        self.reset_channels(self._controller_channels)
+        # self._controller: CommanderPro = CommanderPro()
+        # self._controller_channels = self._controller.detect_channels()
+        # self.reset_channels(self._controller_channels)
+        ControllerManager.identify_fan_controllers()
+        if ControllerManager.fan_controller:
+            self._controller = ControllerManager.fan_controller[0]
+            self._controller_channels = self._controller.detect_channels()
+            self.reset_channels(self._controller_channels)
+        else:
+            self._controller = FanController()
+            self._controller_channels = self._controller.detect_channels()
+            self.reset_channels(self._controller_channels)
 
     def __enter__(self):  # reusable
         self._stack = ExitStack()
@@ -55,7 +64,8 @@ class FanManager:
             for sensor in self._sensors:
                 if isinstance(sensor, AIODeviceSensor):
                     self._stack.enter_context(sensor)
-            self._stack.enter_context(self._controller)
+            if self._controller:
+                self._stack.enter_context(self._controller)
         except Exception:
             self._stack.close()
             raise

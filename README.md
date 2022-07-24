@@ -1,22 +1,22 @@
 # Commander Fan Control (cfancontrol)
 
-A manager for the Corsair Commander fan controller for Linux written in Python with a GUI based on the QT framework. Manage the speeds of all connected fans individually and based on different temperature probes.
+A manager for the Corsair Commander Pro fan controller for Linux written in Python with a GUI based on the QT framework. Manage the speeds of all connected fans individually and based on different temperature probes.
 
-A driver for the Corsair Commander was added to the kernel in version 5.9, so this will be the minimal Linux version required.
+A driver for the Corsair Commander Pro was added to the kernel in version 5.9, so this will be the minimal Linux version required.
 
 ## Aknowledgements
 
-Initially inspired by [afancontrol](https://github.com/KostyaEsmukov/afancontrol) and using the wonderful [liquidctl](https://github.com/liquidctl/liquidctl) for the fan control and also to access temperature sensors in all-in-on liquid coolers (AIOs). Other temperature sensors in the system are detected via the [lm-sensors](https://hwmon.wiki.kernel.org/lm_sensors) package (and the [PySensors](https://pypi.org/project/PySensors/) module). The widget to manage the fan curves is based on the one in [qt-amdgpu-fan-ctl](https://github.com/wepiha/qt-amdgpu-fan-ctl).
+Initially inspired by [afancontrol](https://github.com/KostyaEsmukov/afancontrol) and using the wonderful [liquidctl](https://github.com/liquidctl/liquidctl) for the fan control and as wells as to access temperature sensors in all-in-on liquid coolers (AIOs). Other temperature sensors in the system are detected via the [lm-sensors](https://hwmon.wiki.kernel.org/lm_sensors) package (and the [PySensors](https://pypi.org/project/PySensors/) module). The widget to manage the fan curves is based on the one in [qt-amdgpu-fan-ctl](https://github.com/wepiha/qt-amdgpu-fan-ctl).
 
 ## Screenshots
 
 ##### Light Theme
 
-<img src=".github/screenshot_light.png" alt="Light Screenshot" style="zoom:67%;" />
+<img src=".github/screenshot_light_small.png" alt="Light Screenshot" />
 
 ##### Dark Theme
 
-<img src=".github/screenshot_dark.png" alt="Dark Screenshot" style="zoom:67%;" />
+<img src=".github/screenshot_dark_small.png" alt="Dark Screenshot"/>
 
 ## Requirements
 
@@ -34,7 +34,7 @@ cfancontrol itself requires the following additional Python libraries in their r
 
 - PyQt5~=5.12.3
 - pyqtgraph~=0.12.4
-- liquidctl~=1.6.1
+- liquidctl~=1.8.1
 - numpy~=1.17.4
 - PyYAML~=5.3.1
 - PySensors~=0.0.4

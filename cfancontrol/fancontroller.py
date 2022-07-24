@@ -4,11 +4,48 @@ from typing import Dict, Optional, List, ContextManager
 
 import liquidctl.driver.commander_pro
 from liquidctl import find_liquidctl_devices
+# from liquidctl.driver.commander_pro import CommanderPro
 
 from .log import LogManager
 
 
 class FanController(ContextManager):
+
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    def detect_channels(self) -> List[str]:
+        return []
+
+    def get_channel_speed(self, channel: str) -> int:
+        raise NotImplementedError()
+
+    def set_channel_speed(self, channel: str, new_pwm: int, current_percent: int, new_percent: int, temperature: float) -> bool:
+        raise NotImplementedError()
+
+    def stop_channel(self, channel: str, current_percent: int) -> bool:
+        raise NotImplementedError()
+
+
+class ControllerManager(object):
+    fan_controller: List[FanController] = []
+
+    @staticmethod
+    def identify_fan_controllers():
+        devices = find_liquidctl_devices()
+        for dev in devices:
+            if type(dev) == liquidctl.driver.commander_pro.CommanderPro:
+                LogManager.logger.info(f"Fan controller '{dev.description}' found")
+                ControllerManager.fan_controller.append(CommanderPro(dev))
+
+
+class CommanderPro(FanController, ContextManager):
 
     RPM_STEP: int = 10
     RPM_INTERVAL: float = 0.1
@@ -17,15 +54,18 @@ class FanController(ContextManager):
     def get_commander(cls) -> Optional[liquidctl.driver.commander_pro.CommanderPro]:
         devices = find_liquidctl_devices()
         for dev in devices:
-            if 'Commander' in dev.description:
-                LogManager.logger.info("Fan controller 'Commander Pro' found")
+            # if 'Commander' in dev.description:
+            if type(dev) == CommanderPro:
+                LogManager.logger.info(f"Fan controller '{dev.description}' found")
                 return dev
         return None
 
-    def __init__(self) -> None:
+    def __init__(self, device: liquidctl.driver.commander_pro.CommanderPro) -> None:
+        super().__init__()
         self.is_valid = False
         self._lock = threading.Lock()
-        self.commander = self.get_commander()
+        # self.commander = self.get_commander()
+        self.commander = device
         if self.commander:
             try:
                 self.commander.connect()
