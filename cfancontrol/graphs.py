@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import math
 import pyqtgraph as pg
@@ -16,6 +18,7 @@ class FanCurveWidget(PlotWidget):
         self._graph: EditableGraph = None
         self._line_temp: pg.InfiniteLine = None
         self._line_fan: pg.InfiniteLine = None
+        self._copy_data: List = []
 
         keywords_default = {
             'menuEnabled': False,
@@ -66,8 +69,20 @@ class FanCurveWidget(PlotWidget):
                     minYRange=data['limits'][1],
                     maxYRange=data['limits'][1]
                 )
-        # self.setLimits(xMin=-3, yMin=-5, xMax=107, yMax=105, minXRange=110, maxXRange=110, minYRange=110, maxYRange=110)
-        # self.sizePolicy()
+
+    def contextMenuEvent(self, event):
+        if self._graph.pointCount() > 2:
+            menu = QtWidgets.QMenu()
+            copy_action = menu.addAction('Copy')
+            paste_action = menu.addAction('Paste')
+            paste_action.setEnabled(False)
+            if self._copy_data:
+                paste_action.setEnabled(True)
+            res = menu.exec_(event.globalPos())
+            if res == copy_action:
+                self._copy_data = self.get_graph_data()
+            elif res == paste_action:
+                self._graph.updateData(self._copy_data)
 
     def reset_graph(self):
         if self._graph is not None:
@@ -88,7 +103,7 @@ class FanCurveWidget(PlotWidget):
     def get_graph_data(self) -> list:
         data = list()
         if self._graph is not None:
-            data = self._graph.data['pos']
+            data = self._graph.data['pos'].tolist()
         return data
 
     def draw_lines(self, label_color: QtGui.QColor, line_color: QtGui.QColor):
@@ -187,6 +202,9 @@ class EditableGraph(GraphItem):
 
             self.updateGraph()
 
+    def updateData(self, data: list):
+        self.setData(pos=np.stack(data))
+
     def updateGraph(self):
         super().setData(**self.data)
 
@@ -238,6 +256,9 @@ class EditableGraph(GraphItem):
         flat = self.data['pos'].tolist()
         del flat[index]
         self.setData(pos=np.stack(flat))
+
+    def pointCount(self) -> int:
+        return len(self.data['pos'])
 
     def getPointDistance(self, p1, p2):
         return math.sqrt(

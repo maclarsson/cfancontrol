@@ -1,8 +1,10 @@
 
 class Sensor(object):
 
+    sensor_name: str
+
     def __init__(self):
-        self.sensor_name = None
+        pass
 
     def get_name(self) -> str:
         return self.sensor_name

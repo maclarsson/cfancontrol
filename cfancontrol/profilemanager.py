@@ -1,19 +1,24 @@
 import os
 import json
 import pprint
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 
+from .fancontroller import FanController
 from .log import LogManager
 
 
 class Profile(object):
 
+    version: int
     label: str
-    file_name: str
+    controller: FanController
+    channel_data: Optional[dict]
 
-    def __init__(self, label, file_name):
+    def __init__(self, version, label, controller, channels):
+        self.version = version
         self.label = label
-        self.file_name = file_name
+        self.controller = controller
+        self.channel_data = channels
 
 
 class ProfileManager(object):
@@ -26,7 +31,8 @@ class ProfileManager(object):
         cls.profiles["<none>"] = ""
         cls.profiles_path = profile_path
         for profile in [f for f in os.listdir(profile_path) if f.endswith(".cfp")]:
-            cls.profiles[os.path.splitext(os.path.basename(profile))[0]] = os.path.join(profile_path, profile)
+            # cls.profiles[os.path.splitext(os.path.basename(profile))[0]] = os.path.join(profile_path, profile)
+            cls.add_profile(os.path.join(profile_path, profile))
 
     @classmethod
     def add_profile(cls, file_name) -> str:
@@ -91,7 +97,7 @@ class ProfileManager(object):
                 file_name = file_name + '.cfp'
             try:
                 LogManager.logger.info(f"Saving profile '{file_name}'")
-                json_data = pprint.pformat(profile_data).replace("'", '"')
+                json_data = pprint.pformat(profile_data, indent=1, width=120, compact=False, sort_dicts=False).replace("'", '"')
                 with open(file_name, 'w') as json_file:
                     json_file.write(json_data)
                 success = True

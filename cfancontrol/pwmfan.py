@@ -1,6 +1,6 @@
 
 from .sensor import Sensor
-from .fancurve import FanCurve, FanMode, TempRange
+from .fancurve import FanCurve, FanMode, TempRange, MAXPWM
 from .log import LogManager
 
 
@@ -27,15 +27,23 @@ class PWMFan:
         self.temperature = self.temp_sensor.get_temperature()
         return self.temperature
 
-    def update_pwm(self) -> (bool, int, int, float):
+    def get_fan_status(self) -> (FanMode, int, int, float):
+        return self.fan_curve.get_fan_mode(), self.get_current_pwm(), self.get_current_pwm_as_percentage(), self.get_current_temp()
+
+    def update_pwm(self, current_pwm: int) -> (bool, int, int, float):
         new_pwm: int
-        pwm_percent: float
+        pwm_percent: int
         temp: float
         temp_range: TempRange
 
+        if self.pwm != current_pwm:
+            if 0 < current_pwm <= MAXPWM:
+                LogManager.logger.warning(f"Fan speed changed unexpectedly {repr({'fan': self.fan_name, 'expected pwm': self.pwm, 'reported pwm': current_pwm})}")
+                self.pwm = current_pwm
+
         if self.fan_curve.get_fan_mode() == FanMode.Off:
             new_pwm = 0
-            pwm_percent = 0.0
+            pwm_percent = 0
             temp = 0.0
             return (new_pwm != self.pwm), new_pwm, pwm_percent, temp
 
@@ -51,10 +59,9 @@ class PWMFan:
             temp_range = self.fan_curve.get_range_from_temp(temp)
 
             if temp_range is None:
-                LogManager.logger.warning(f"'{self.fan_name}': no suitable range for temp [" + str(temp) + "] found")
+                LogManager.logger.warning(f"No suitable temperature range found {repr({'fan': self.fan_name, 'temperature': str(temp)})}")
                 return False, 0, 0
 
-            LogManager.logger.debug(f"{self.fan_name}': current temp " + str(temp) + "°C (+" + str(temp_range.hysteresis) + "°C hysteresis) in range [" + str(temp_range.low_temp) + "°C] to [" + str(temp_range.high_temp) + "°C]")
             if temp < temp_range.low_temp:
                 temp = temp_range.low_temp
             if temp_range.hysteresis > 0.0:
@@ -66,9 +73,7 @@ class PWMFan:
             pwm_percent = self.fan_curve.pwm_to_percentage(new_pwm)
 
         if new_pwm != self.pwm:
-            LogManager.logger.debug(f"'{self.fan_name}': new target PWM {new_pwm} in range [{str(temp_range.pwm_start)}] to [{str(temp_range.pwm_end)}]")
-        else:
-            LogManager.logger.debug(f"'{self.fan_name}': new target PWM same as current PWM")
+            LogManager.logger.debug(f"Changing PWM {repr({'fan': self.fan_name, 'current pwm': self.pwm, 'target pwm': new_pwm, 'target range': f'[{temp_range.pwm_start}-{temp_range.pwm_end}]', 'temperature range': f'[{temp_range.low_temp}-{temp_range.high_temp}]°C'})}")
 
         return (new_pwm != self.pwm), new_pwm, pwm_percent, temp
 

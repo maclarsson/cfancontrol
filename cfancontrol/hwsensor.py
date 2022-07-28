@@ -19,10 +19,11 @@ class HwSensor(Sensor):
     def get_temperature(self) -> float:
         temp, success = self.get_sensor_data()
         if success:
+            LogManager.logger.debug(f"Getting sensor temperature {repr({'sensor': self.sensor_name, 'temperature': temp})}")
             if self.current_temp == 0.0 or (10.0 < temp < 99.0):
                 self.current_temp = temp
             else:
-                LogManager.logger.warning(f"Sensor data out of range to update sensor {self.sensor_name} ('{self.sensor_file}'): last temp: {self.current_temp} / new temp: {temp}")
+                LogManager.logger.warning(f"Sensor temperature data out of range {repr({'sensor': self.sensor_name, 'last temp': self.current_temp, 'new temp': temp})}")
         return self.current_temp
 
     def get_sensor_data(self) -> (float, bool):
@@ -33,19 +34,18 @@ class HwSensor(Sensor):
             value = float(raw) / 1000
             ret = True
         else:
-            LogManager.logger.warning(f"Sensor data invalid: {raw}")
+            LogManager.logger.warning(f"Invalid sensor data {repr({'sensor': self.sensor_name, 'sensor file': self.sensor_file, 'data': raw})}")
         return value, ret
 
     def get_signature(self) -> list:
         return [self.__class__.__name__, self.chip_name, self.sensor_folder, self.sensor_feature, self.sensor_name]
 
-    @staticmethod
-    def get_file_data(file_name: str) -> Optional[str]:
+    def get_file_data(self, file_name: str) -> Optional[str]:
         value: str = None
         try:
             with open(file_name, 'r') as file:
                 value = file.read().strip()
         except OSError:
-            LogManager.logger.exception(f"Error getting sensor data from '{file_name}'")
+            LogManager.logger.exception(f"Error getting sensor data {repr({'sensor': self.sensor_name, 'sensor file': file_name})}")
         return value
 

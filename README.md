@@ -1,6 +1,8 @@
-# Commander Fan Control (cfancontrol)
+# Commander² Fan Control (cfancontrol)
 
-A manager for the Corsair Commander Pro fan controller for Linux written in Python with a GUI based on the QT framework. Manage the speeds of all connected fans individually and based on different temperature probes.
+A manager primarily for the Corsair Commander Pro fan controller for Linux written in Python with a GUI based on the QT framework.
+Support for other fan controllers is currently experimental and limited to the fans of the Corsair Hydro Platinum AIOs.
+Manage the speeds of all connected fans individually and based on different temperature probes.
 
 A driver for the Corsair Commander Pro was added to the kernel in version 5.9, so this will be the minimal Linux version required.
 
@@ -34,7 +36,7 @@ cfancontrol itself requires the following additional Python libraries in their r
 
 - PyQt5~=5.12.3
 - pyqtgraph~=0.12.4
-- liquidctl~=1.8.1
+- liquidctl~=1.10.0
 - numpy~=1.17.4
 - PyYAML~=5.3.1
 - PySensors~=0.0.4
@@ -42,6 +44,8 @@ cfancontrol itself requires the following additional Python libraries in their r
 - pyxdg~=0.28
 
 ## Installation
+
+### From Source
 
 The installation is best done via pip from inside the downloaded repository:
 
@@ -85,7 +89,7 @@ Device #1: NZXT Kraken X (X53, X63 or X73)
 Device #2: Gigabyte RGB Fusion 2.0 5702 Controller
 ```
 
-**Note**: Supported devices right now are the 'NZXT Kraken X3' and 'Corsair Hydro' series of AIOs. Other devices supported by liquidctl may easily be added, but I do not have them for proper testing.
+**Note**: Supported devices right now are the 'NZXT Kraken X3' and 'Corsair Hydro Platinum' series of AIOs. Other devices supported by liquidctl may easily be added, but I do not have them for proper testing.
 
 ## Usage
 

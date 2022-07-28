@@ -37,7 +37,7 @@ def main(manager: FanManager, show_app=True, theme='light'):
 def warning_already_running():
     app = QtWidgets.QApplication(sys.argv)
     response = QtWidgets.QMessageBox.warning(None, Environment.APP_FANCY_NAME,
-                                             f"Cannot start {Environment.APP_NAME} as an instance is already running.\n\n"
+                                             f"Cannot start {Environment.APP_FANCY_NAME} as an instance is already running.\n\n"
                                              f"Check '{Environment.pid_path}/{Environment.APP_NAME}.pid' and remove it if necessary.",
                                              QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
@@ -69,6 +69,5 @@ def load_color_scheme(scheme: str) -> QtGui.QPalette:
 
 
 if __name__ == "__main__":
-    # the_settings = Settings()
     the_manager = FanManager()
     main(the_manager, show_app=True, theme='light')

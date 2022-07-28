@@ -1,6 +1,7 @@
 import os
 import argparse
 import logging
+import sys
 
 from pid import PidFile, PidFileAlreadyLockedError
 
@@ -47,7 +48,7 @@ def main():
     args = parse_settings()
 
     LogManager.set_log_level(Config.log_level)
-    LogManager.logger.info(f'Starting cfancontrol version {__version__} with configuration: {repr(Config.get_settings())}')
+    LogManager.logger.info(f'Starting {Environment.APP_FANCY_NAME} version {__version__} with configuration: {repr(Config.get_settings())}')
 
     try:
         with PidFile(Environment.APP_NAME, piddir=Environment.pid_path) as pid:
@@ -56,22 +57,25 @@ def main():
                 if args.mode == "gui":
                     app.main(manager, not Config.auto_start, Config.theme)
                 else:
-                    if Config.profile_file and Config.profile_file != '':
-                        manager.set_profile(os.path.splitext(os.path.basename(Config.profile_file))[0])
-                        manager.toggle_manager(True)
-                        manager.manager_thread.join()
-                    else:
+                    if not manager.has_controller():
+                        LogManager.logger.critical(f"No supported fan controller found -> please check system configuration and restart {Environment.APP_FANCY_NAME}")
+                        return
+                    if not Config.profile_file or Config.profile_file == '':
                         LogManager.logger.critical(f"No profile file specified for daemon mode -> please us -p option to specify a profile")
+                        return
+                    manager.set_profile(os.path.splitext(os.path.basename(Config.profile_file))[0])
+                    manager.toggle_manager(True)
+                    manager.manager_thread.join()
     except PidFileAlreadyLockedError:
         if args.mode == "gui":
             app.warning_already_running()
-        LogManager.logger.critical(f"PID file '{Environment.pid_path}/{Environment.APP_NAME}.pid' already exists - cfancontrol is already running or was not completed properly -> STOPPING")
-    except RuntimeError as err:
-        LogManager.logger.exception(f"Program stopped with runtime error")
+        LogManager.logger.critical(f"PID file '{Environment.pid_path}/{Environment.APP_NAME}.pid' already exists - cfancontrol is already running or was not completed properly before -> STOPPING")
+    except RuntimeError:
+        LogManager.logger.exception(f"{Environment.APP_FANCY_NAME} stopped with runtime error")
     except BaseException:
-        LogManager.logger.exception(f"Program stopped with unknown error")
+        LogManager.logger.exception(f"{Environment.APP_FANCY_NAME} stopped with unknown error")
     else:
-        LogManager.logger.info(f"Program stopped normally")
+        LogManager.logger.info(f"{Environment.APP_FANCY_NAME} ended normally")
 
 
 if __name__ == "__main__":

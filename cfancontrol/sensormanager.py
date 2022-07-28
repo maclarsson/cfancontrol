@@ -17,11 +17,11 @@ class SensorManager(object):
 
     @staticmethod
     def identify_system_sensors():
-        # get sensors via PySensors and libsensors.so (part of lm_sensors) -> config in /etc/sensors3.conf
+        # get sensors via PySensors and libsensors.so (part of lm_sensors) -> config in /.config/cfancontrol/sensors3.conf or /etc/sensors3.conf
         sensors.init(bytes(Environment.sensors_config_file, "utf-8"))
         try:
             for chip in sensors.iter_detected_chips():
-                LogManager.logger.info(f"System sensor {repr(chip)} found")
+                LogManager.logger.info(f"System sensor found {repr({'name': chip.prefix.decode('utf-8'), 'chip': repr(chip)})}")
                 for feature in chip:
                     # is it a temp sensor on the chip
                     if feature.type == 2:
@@ -30,7 +30,7 @@ class SensorManager(object):
                         if name == label:
                             # no label set for feature, so add prefix
                             label = chip.prefix.decode('utf-8') + "_" + feature.label
-                        LogManager.logger.info(f"Adding feature '{name}' as sensor '{label}'")
+                        LogManager.logger.debug(f"Adding feature {repr({'chip': chip.prefix.decode('utf-8'), 'feature name': name, 'label': label})}")
                         SensorManager.system_sensors.append(HwSensor(str(chip), chip.path.decode('utf-8'), name, label))
         finally:
             sensors.cleanup()
@@ -39,16 +39,16 @@ class SensorManager(object):
         devices = liquidctl.find_liquidctl_devices()
         for dev in devices:
             if type(dev) == liquidctl.driver.kraken3.KrakenX3:
-                LogManager.logger.info(f"'{dev.description}' found")
+                LogManager.logger.info(f"AIO device found {repr({'device': dev.description})}")
                 SensorManager.system_sensors.append(KrakenX3Sensor(dev))
             elif type(dev) == liquidctl.driver.hydro_platinum.HydroPlatinum:
-                LogManager.logger.info(f"'{dev.description}' found")
+                LogManager.logger.info(f"AIO device found {repr({'device': dev.description})}")
                 SensorManager.system_sensors.append(HydroPlatinumSensor(dev))
 
         # append sensors of GPUs (if found)
         nvidia_gpus: List[NvidiaSensor] = NvidiaSensor.detect_gpus()
         for gpu in nvidia_gpus:
-            LogManager.logger.info(f"nVidia GPU #{gpu.index} with name '{gpu.device_name}' found")
+            LogManager.logger.info(f"nVidia GPU found {repr({'id': gpu.index, 'device': gpu.device_name})}")
             SensorManager.system_sensors.append(gpu)
 
     @staticmethod
