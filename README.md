@@ -59,6 +59,16 @@ If you like to run cfancontrol system wide or as a daemon, install as root:
 $ sudo pip install .
 ```
 
+### Flatpak
+
+Starting from release 1.2.0 a Flatpak is available for download. Run the following command to install it:
+
+```bash
+$ flatpak install [--user] com.github.maclarsson.cfancontrol
+```
+
+The Flatpak includes a .desktop file for system integration. 
+
 ## Configuration
 
 ### hwmon Sensors
